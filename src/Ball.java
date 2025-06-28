@@ -41,14 +41,6 @@ public class Ball {
         }
     }
 
-
-    public void collide(int dir) {
-        switch (dir) {
-            case 0 -> dx *= -1;
-            case 1 -> dy *= -1;
-        }
-    }
-
     public Rectangle getBounds() {
         return new Rectangle((int)x, (int)y, width, height);
     }
@@ -72,9 +64,7 @@ public class Ball {
     }
 
     public float getX() { return x; }
-    public void setX(int x) { this.x = x; }
     public float getY() { return y; }
-    public void setY(int y) { this.y = y; }
     public float getDx() { return dx; }
     public void setDx(float dx) { this.dx = dx; }
     public float getDy() { return dy; }

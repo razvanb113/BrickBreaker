@@ -19,9 +19,6 @@ public class GadgetTime {
     }
 
     public Runnable onEnd;
-    private String type;
-
-    public void setType(String t) { this.type = t; }
 
     public boolean isExpired() {
         return getRemaining() <= 0;
@@ -30,14 +27,6 @@ public class GadgetTime {
     public int getRemaining() {
         long elapsed = System.currentTimeMillis() - startTime;
         return (int)Math.max(0, duration - elapsed);
-    }
-
-    public boolean refreshIfSameType(Gadget g) {
-        if (g.getType() == gadget.getType()) {
-            this.startTime = System.currentTimeMillis();
-            return true;
-        }
-        return false;
     }
 
     public void draw(Graphics2D g, int index) {

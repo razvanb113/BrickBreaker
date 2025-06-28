@@ -1,10 +1,7 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +12,6 @@ public class GameMenu extends JFrame {
 
     private CardLayout cardLayout;
     private JPanel cardPanel;
-    private GameBoard gameBoard;
     private JPanel levelsPanel;
     public static boolean dbSelected = false;
 
@@ -132,7 +128,6 @@ public class GameMenu extends JFrame {
         toggleButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         if (!GameMenu.dbSelected) {
-            // Ascunde câmpurile email și parolă în modul local
             emailLabel.setVisible(false);
             emailField.setVisible(false);
             passLabel.setVisible(false);
@@ -196,7 +191,7 @@ public class GameMenu extends JFrame {
                     return;
                 }
 
-                String result = UserManager.login(username, null); // Parola ignorată
+                String result = UserManager.login(username, null);
                 if (result.contains("Autentificat")) {
                     Session.loggedUsername = username;
                     statusLabel.setText(UserManager.getAccountSummary(username));
@@ -280,7 +275,6 @@ public class GameMenu extends JFrame {
 
         return accountPanel;
     }
-
 
     private void updateUIAfterLogout() {
         Session.loggedUsername = null;
@@ -434,8 +428,6 @@ public class GameMenu extends JFrame {
         return mainPanel;
     }
 
-
-
     public void loadLevels() {
         cardPanel.remove(levelsPanel);
 
@@ -446,8 +438,6 @@ public class GameMenu extends JFrame {
         cardPanel.revalidate();
         cardPanel.repaint();
     }
-
-
 
     private JPanel createSettingsPanel() {
         JPanel panel = new JPanel(new BorderLayout(10, 10));

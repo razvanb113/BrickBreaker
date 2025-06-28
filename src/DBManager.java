@@ -16,24 +16,4 @@ public class DBManager {
             e.printStackTrace();
         }
     }
-
-    public void addUser(String username) {
-        try {
-            String sql = "INSERT INTO users(username) VALUES(?)";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, username);
-            stmt.executeUpdate();
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void close() {
-        try {
-            if (conn != null) conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 }

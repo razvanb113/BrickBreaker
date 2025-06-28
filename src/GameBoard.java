@@ -53,8 +53,6 @@ public class GameBoard extends JPanel {
         setBackground(new Color(58, 64, 58));
         setupKeyBindings();
 
-        DBManager db = new DBManager();
-
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -86,8 +84,8 @@ public class GameBoard extends JPanel {
             public void mousePressed(MouseEvent e) {
                 if (gameState == GameState.WAITING_TO_LAUNCH && !ballLaunched) {
                     Ball ball = balls.getFirst();
-                    float dx = e.getX() - (float)ball.getX();
-                    float dy = e.getY() - (float)ball.getY();
+                    float dx = e.getX() - ball.getX();
+                    float dy = e.getY() - ball.getY();
                     float length = (float) Math.sqrt(dx * dx + dy * dy);
                     if (length != 0) {
                         dx /= length;
@@ -152,7 +150,6 @@ public class GameBoard extends JPanel {
 
             while (gameState != GameState.GAME_OVER && gameState != GameState.GAME_WIN) {
                 long now = System.nanoTime();
-                long delta = now - lastTime;
                 lastTime = now;
 
                 if (gameState == GameState.GAME_ON) {
@@ -173,17 +170,6 @@ public class GameBoard extends JPanel {
         });
 
         gameThread.start();
-    }
-
-    public void stopGame() {
-        gameState = GameState.GAME_OVER;
-        if (gameThread != null && gameThread.isAlive()) {
-            try {
-                gameThread.join(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     private void initGame() {
@@ -385,11 +371,6 @@ public class GameBoard extends JPanel {
         speedBoostApplied = true;
     }
 
-    private void gadgetPlatform(Gadget g) {
-        GadgetTime gadgetTime = new GadgetTime(g);
-        platform.extend(10);
-    }
-
     private void normalizeSpeed(Ball ball, float speed) {
         float dx = ball.getDx();
         float dy = ball.getDy();
@@ -429,7 +410,7 @@ public class GameBoard extends JPanel {
         }
 
         if (gameState == GameState.WAITING_TO_LAUNCH && !ballLaunched) {
-            Ball b = balls.get(0);
+            Ball b = balls.getFirst();
             int cx = (int) b.getX() + b.getWidth() / 2;
             int cy = (int) b.getY() + b.getHeight() / 2;
 

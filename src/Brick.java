@@ -1,7 +1,6 @@
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 public class Brick {
@@ -24,14 +23,6 @@ public class Brick {
         crack1 = getImage("/sprites/crack1.png");
         crack2 = getImage("/sprites/crack2.png");
         crack3 = getImage("/sprites/crack3.png");
-    }
-
-    public void breakBrick(Brick brick) {
-        if(this.health > 1)
-            this.health -= brick.health;
-        else
-            this.isVisible = false;
-
     }
 
     public void loadImage(String fileName){
