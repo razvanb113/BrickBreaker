@@ -45,9 +45,12 @@ Baza de date are două tabele, în această formă:
 
 ## Cerințe
 
-- Java JDK 8+ (recomandat JDK 11)
+- Java JDK 21+ (recomandat JDK 23)
 - IDE: IntelliJ IDEA, Eclipse sau alt IDE compatibil
-- Optional: un server SQL local (MySQL, SQLite, etc.)
+- Optional: un server SQL local (MySQL, SQLite, etc.), configurat astfel:
+  - nume bază de date: `brickbreaker`
+  - fără parolă
+  - cu tabelele descrise [mai sus](#bază-de-date-sql) 
 
 ## Instalare și rulare
 
@@ -57,4 +60,4 @@ git clone https://github.com/razvanb113/brickbreaker.git
 cd brickbreaker
 ```
 
-- Rulează arhiva `BrickBreaker.jar`, disponibilă pe [GitHub](https://github.com/razvanb113/BrickBreaker/releases/tag/release)
+- Rulează arhiva `BrickBreaker.jar`, disponibilă pe [GitHub](https://github.com/razvanb113/BrickBreaker/releases/tag/release).
