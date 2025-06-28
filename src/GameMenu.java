@@ -30,14 +30,12 @@ public class GameMenu extends JFrame {
         setFocusable(true);
         pack();
 
-        BufferedImage icon;
+        BufferedImage icon = null;
         try {
-            icon = ImageIO.read(new File("./sprites/icon.png"));
-            setIconImage(icon);
+            icon = ImageIO.read(getClass().getResource("/sprites/icon.png"));
         } catch (IOException e) {
-            e.printStackTrace();
         }
-
+        setIconImage(icon);
         JPanel menuPanel = createMenuPanel();
         JPanel settingsPanel = createSettingsPanel();
         UserManager.init();

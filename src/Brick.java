@@ -18,16 +18,12 @@ public class Brick {
         this.height = height;
         this.health = health;
         this.maxHealth = health;
-        if(health < 3) {this.loadImage("./sprites/caramida1.png");}
-        else if(health < 6) {this.loadImage("./sprites/caramida2.png");}
-        else this.loadImage("./sprites/caramida3.png");
-        try {
-            crack1 = ImageIO.read(new File("./sprites/crack1.png"));
-            crack2 = ImageIO.read(new File("./sprites/crack2.png"));
-            crack3 = ImageIO.read(new File("./sprites/crack3.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        if(health < 3) {this.loadImage("/sprites/caramida1.png");}
+        else if(health < 6) {this.loadImage("/sprites/caramida2.png");}
+        else this.loadImage("/sprites/caramida3.png");
+        crack1 = getImage("/sprites/crack1.png");
+        crack2 = getImage("/sprites/crack2.png");
+        crack3 = getImage("/sprites/crack3.png");
     }
 
     public void breakBrick(Brick brick) {
@@ -39,11 +35,21 @@ public class Brick {
     }
 
     public void loadImage(String fileName){
+
         try {
             image = ImageIO.read(getClass().getResource(fileName));
         } catch (IOException e) {
             image = null;
         }
+    }
+
+    public BufferedImage getImage(String fileName) {
+        BufferedImage crackImage = null;
+        try {
+             crackImage = ImageIO.read(getClass().getResource(fileName));
+        } catch (IOException e) {
+        }
+        return crackImage;
     }
 
 

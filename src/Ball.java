@@ -15,7 +15,7 @@ public class Ball {
         this.y = y;
         this.dx = dx;
         this.dy = dy;
-        loadImage("./sprites/ball.png");
+        loadImage("/sprites/ball.png");
         this.width = 16;
         this.height = 16;
     }

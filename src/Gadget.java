@@ -20,15 +20,15 @@ public class Gadget {
         this.height = 32;
 
         if (variant < 3.3) {
-            loadImage("./sprites/gadget_platform.png");
+            loadImage("/sprites/gadget_platform.png");
             type = 1;
             duration = 10000;
         } else if (variant < 6.6) {
-            loadImage("./sprites/gadget_speed.png");
+            loadImage("/sprites/gadget_speed.png");
             type = 2;
             duration = 10000;
         } else {
-            loadImage("./sprites/gadget_balls.png");
+            loadImage("/sprites/gadget_balls.png");
             type = 3;
         }
 
@@ -36,7 +36,7 @@ public class Gadget {
 
     public void loadImage(String fileName){
         try {
-            image = ImageIO.read(new File(fileName));
+            image = ImageIO.read(getClass().getResource(fileName));
         } catch (IOException e) {
             image = null;
         }
