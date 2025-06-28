@@ -38,11 +38,11 @@ public class Brick {
 
     }
 
-    public void loadImage(String imageName){
-        try{
-            image = ImageIO.read(new File(imageName));
+    public void loadImage(String fileName){
+        try {
+            image = ImageIO.read(getClass().getResource(fileName));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            image = null;
         }
     }
 

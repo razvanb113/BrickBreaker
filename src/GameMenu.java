@@ -17,6 +17,7 @@ public class GameMenu extends JFrame {
     private JPanel cardPanel;
     private GameBoard gameBoard;
     private JPanel levelsPanel;
+    public static boolean dbSelected = false;
 
 
     public GameMenu() {
@@ -132,6 +133,18 @@ public class GameMenu extends JFrame {
         Butoane toggleButton = new Butoane("Nu ai cont? Creează unul");
         toggleButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        if (!GameMenu.dbSelected) {
+            // Ascunde câmpurile email și parolă în modul local
+            emailLabel.setVisible(false);
+            emailField.setVisible(false);
+            passLabel.setVisible(false);
+            passField.setVisible(false);
+
+            toggleButton.setVisible(false);
+            registerButton.setVisible(false);
+        }
+
+
         registerButton.setVisible(false);
         logoutButton.setVisible(false);
 
@@ -178,32 +191,54 @@ public class GameMenu extends JFrame {
 
         loginButton.addActionListener(e -> {
             String username = userField.getText().trim();
-            String email = emailField.getText().trim();
-            String password = new String(passField.getPassword());
 
-            if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                statusLabel.setText("Completează toate câmpurile.");
-                return;
-            }
+            if (!GameMenu.dbSelected) {
+                if (username.isEmpty()) {
+                    statusLabel.setText("Introdu un username.");
+                    return;
+                }
 
-            if (!isValidEmail(email)) {
-                statusLabel.setText("Email invalid.");
-                return;
-            }
+                String result = UserManager.login(username, null); // Parola ignorată
+                if (result.contains("Autentificat")) {
+                    Session.loggedUsername = username;
+                    statusLabel.setText(UserManager.getAccountSummary(username));
+                    loginButton.setVisible(false);
+                    logoutButton.setVisible(true);
+                    formPanel.setVisible(false);
+                    loadLevels();
+                } else {
+                    statusLabel.setText(result);
+                }
 
-            String result = UserManager.login(username, password);
-            if (result.equals("Autentificat cu succes.")) {
-                Session.loggedUsername = username;
-                statusLabel.setText(UserManager.getAccountSummary(username));
-                registerButton.setVisible(false);
-                loginButton.setVisible(false);
-                logoutButton.setVisible(true);
-                toggleButton.setVisible(false);
-                formPanel.setVisible(false);
-                loadLevels();
             } else {
-                statusLabel.setText(result);
+                String email = emailField.getText().trim();
+                String password = new String(passField.getPassword());
+
+                if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                    statusLabel.setText("Completează toate câmpurile.");
+                    return;
+                }
+
+                if (!isValidEmail(email)) {
+                    statusLabel.setText("Email invalid.");
+                    return;
+                }
+
+                String result = UserManager.login(username, password);
+                if (result.equals("Autentificat cu succes.")) {
+                    Session.loggedUsername = username;
+                    statusLabel.setText(UserManager.getAccountSummary(username));
+                    registerButton.setVisible(false);
+                    loginButton.setVisible(false);
+                    logoutButton.setVisible(true);
+                    toggleButton.setVisible(false);
+                    formPanel.setVisible(false);
+                    loadLevels();
+                } else {
+                    statusLabel.setText(result);
+                }
             }
+
         });
 
         registerButton.addActionListener(e -> {
@@ -417,18 +452,42 @@ public class GameMenu extends JFrame {
 
 
     private JPanel createSettingsPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
         JLabel label = new JLabel("Setări Joc", JLabel.CENTER);
-        label.setFont(new Font("Arial", Font.PLAIN, 20));
-        panel.add(label, BorderLayout.CENTER);
+        label.setFont(new Font("Century Gothic", Font.BOLD, 32));
 
-        JButton backButton = new JButton("Înapoi la Meniu");
+        JCheckBox dbToggle = new JCheckBox("Bază de date");
+        dbToggle.setFont(new Font("Century Gothic", Font.PLAIN, 24));
+        dbToggle.setSelected(false);
+
+        dbToggle.addActionListener(e -> {
+            dbSelected = dbToggle.isSelected();
+        });
+
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+        centerPanel.add(Box.createVerticalGlue());
+        dbToggle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        centerPanel.add(dbToggle);
+        centerPanel.add(Box.createVerticalGlue());
+
+        Butoane backButton = new Butoane("← Înapoi");
+        backButton.setFocusPainted(false);
+        backButton.setBorderPainted(false);
+        backButton.setContentAreaFilled(false);
+        backButton.setHorizontalAlignment(SwingConstants.LEFT);
+        centerPanel.add(backButton, BorderLayout.WEST);
         backButton.addActionListener(e -> cardLayout.show(cardPanel, "menu"));
-        panel.add(backButton, BorderLayout.SOUTH);
+
+        panel.add(label, BorderLayout.NORTH);
+        panel.add(centerPanel, BorderLayout.CENTER);
+        //panel.add(backButton, BorderLayout.SOUTH);
 
         return panel;
     }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(GameMenu::new);

@@ -56,7 +56,7 @@ public class Ball {
 
     public void loadImage(String fileName){
         try {
-            image = ImageIO.read(new File(fileName));
+            image = ImageIO.read(getClass().getResource(fileName));
         } catch (IOException e) {
             image = null;
         }

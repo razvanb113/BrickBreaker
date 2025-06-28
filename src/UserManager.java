@@ -1,3 +1,5 @@
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
@@ -12,7 +14,15 @@ public class UserManager {
     private static String currentUser = null;
     private static final Map<Integer, Integer> localScores = new HashMap<>();
     private static final String USER_CACHE_FILE = "user.cache";
+    private static final String LOCAL_SCORE_FILE = "local_scores.txt";
+
     public static void init() {
+
+        if(!GameMenu.dbSelected){
+            loadLocalScoresFromFile();
+            Session.loggedUsername = currentUser;
+        }
+
         try {
             Path tokenPath = java.nio.file.Path.of(USER_CACHE_FILE);
 
@@ -74,6 +84,11 @@ public class UserManager {
 
 
     public static String register(String username, String email, String password) {
+
+        if (!GameMenu.dbSelected) {
+            return "În modul offline nu se pot crea conturi.";
+        }
+
         String hashed = hashPassword(password);
         String sql = "INSERT INTO users(username, email, password) VALUES (?, ?, ?)";
 
@@ -105,6 +120,15 @@ public class UserManager {
 
 
     public static String login(String username, String password) {
+
+        if (!GameMenu.dbSelected) {
+            currentUser = username;
+            Session.loggedUsername = username;
+            loadLocalScoresFromFile();
+            return "Autentificat local.";
+        }
+
+
         String sql = "SELECT password FROM users WHERE username = ?";
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -135,6 +159,12 @@ public class UserManager {
 
 
     public static void saveScore(String username, int level, int score) {
+
+        if (!GameMenu.dbSelected) {
+            localScores.put(level, Math.max(score, localScores.getOrDefault(level, 0)));
+            saveLocalScoresToFile();
+            return;
+        }
 
         String getUserIdSql = "SELECT id FROM users WHERE username = ?";
         String selectScoreSql = "SELECT score FROM scores WHERE user_id = ? AND level = ?";
@@ -182,6 +212,11 @@ public class UserManager {
     }
 
     public static int getLastLevel(String username) {
+
+        if (!GameMenu.dbSelected) {
+            return localScores.keySet().stream().mapToInt(Integer::intValue).max().orElse(0);
+        }
+
         String sql = """
             SELECT MAX(level) as last_level FROM scores
             JOIN users ON scores.user_id = users.id
@@ -200,6 +235,11 @@ public class UserManager {
     }
 
     public static Map<Integer, Integer> getScoresByLevel(String username) {
+
+        if (!GameMenu.dbSelected) {
+            return new HashMap<>(localScores);
+        }
+
         Map<Integer, Integer> scores = new HashMap<>();
 
         String sql = """
@@ -277,10 +317,57 @@ public class UserManager {
     public static void logout() {
         currentUser = null;
         clearUserCache();
+        if (!GameMenu.dbSelected) {
+            saveLocalScoresToFile();
+        }
     }
+
 
     public static boolean isLoggedIn() {
         return currentUser != null;
+    }
+
+    private static void saveLocalScoresToFile() {
+        if (currentUser == null) return;
+
+        try (PrintWriter writer = new PrintWriter(LOCAL_SCORE_FILE)) {
+            writer.println("username:" + currentUser);
+            for (Map.Entry<Integer, Integer> entry : localScores.entrySet()) {
+                writer.println(entry.getKey() + ":" + entry.getValue());
+            }
+        } catch (IOException e) {
+            System.out.println("Eroare la salvarea scorurilor locale.");
+            e.printStackTrace();
+        }
+    }
+
+
+    private static void loadLocalScoresFromFile() {
+        localScores.clear();
+        Path path = Path.of(LOCAL_SCORE_FILE);
+        if (!Files.exists(path)) return;
+
+        try {
+            for (String line : Files.readAllLines(path)) {
+                if (!line.contains(":")) continue;
+
+                String[] parts = line.trim().split(":");
+
+                if (parts.length != 2) continue;
+
+                if (parts[0].equals("username")) {
+                    currentUser = parts[1];
+                    Session.loggedUsername = parts[1];
+                } else {
+                    int level = Integer.parseInt(parts[0]);
+                    int score = Integer.parseInt(parts[1]);
+                    localScores.put(level, score);
+                }
+            }
+        } catch (IOException | NumberFormatException e) {
+            System.out.println("Eroare la încărcarea scorurilor locale.");
+            e.printStackTrace();
+        }
     }
 
 
